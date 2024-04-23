@@ -1,0 +1,26 @@
+{
+  "name": "back",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "startServer": "bun run dist/index.js",
+    "dev": "bun --watch src/index.ts",
+    "bundle": "bun build src/index.ts --outdir ./dist"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "prisma": "^5.12.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.12.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "zod": "^3.23.0"
+  }
+}
