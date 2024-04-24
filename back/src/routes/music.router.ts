@@ -17,7 +17,7 @@ musicRouter.get('/', async (req, res) => {
   }
 });
 
-musicRouter.get('/:id', async (req, res) => {
+musicRouter.get('/id/:id', async (req, res) => {
   try {
     const music = await getMusicById(req.params.id);
     res.status(200).json({ message: 'Music getted successfully', music });
@@ -26,10 +26,11 @@ musicRouter.get('/:id', async (req, res) => {
   }
 });
 
-musicRouter.get('/music', async (req, res) => {
+musicRouter.get('/title/:title', async (req, res) => {
   try {
-    const music = await getMusicByTitle(req.query.title as string);
-    res.status(200).json({ message: 'Music getted successfully', music });
+    const title = req.params.title; // Asegúrate de obtener el título de req.params
+    const music = await getMusicByTitle(title);
+    res.status(200).json({ message: 'Music retrieved successfully', music });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -37,9 +38,13 @@ musicRouter.get('/music', async (req, res) => {
 
 musicRouter.post('/', async (req, res) => {
   try {
-    const music = await createMusic(req.body.title);
+    const music = await createMusic(req.body);  // Usar req.body completo
     res.status(201).json({ message: 'Music created successfully', music });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
+
+
+
+export { musicRouter };

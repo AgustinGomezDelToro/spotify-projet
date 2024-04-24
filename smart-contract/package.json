@@ -1,0 +1,15 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "hardhat": "^2.22.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "hardhat-test": "hardhat test",
+    "sepolia-deploy": "hardhat ignition deploy ./ignition/modules/Music.ts --network sepolia"
+  }
+}

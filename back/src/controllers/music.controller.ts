@@ -1,7 +1,5 @@
 import { prisma } from '../index.ts';
 import { z } from 'zod';
-import type { Music } from '@prisma/client';
-import { connect, listen } from 'bun';
 
 export const getAllMusic = async () => {
   try {
@@ -25,11 +23,14 @@ export const getMusicById = async (id: string) => {
   }
 };
 
-export const getMusicByTitle = async (name: string) => {
+export const getMusicByTitle = async (title: string) => {
   try {
     const music = await prisma.music.findMany({
       where: {
-        title: name,
+        title: {
+          equals: title,
+          mode: 'insensitive'
+        }
       },
     });
     return music;
@@ -38,32 +39,33 @@ export const getMusicByTitle = async (name: string) => {
   }
 };
 
+
 const MusicSchema = z.object({
   title: z.string().min(3).max(30),
   year: z.number().int().positive().finite(),
-  artist: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  albumId: z.string().min(3).max(30).optional(),
-  listenNumber: z.number().int().optional(),
+  artistId: z.string(), // Usar artistId en lugar de artist
+  albumId: z.string(),
+  listenNumber: z.number().int().nonnegative().optional(),
 });
-
 interface MusicData {
   title: string;
   year: number;
-  artist: `0x${string}`;
+  artistId: string;
   albumId: string;
-  listenNumber: number | 0;
+  listenNumber: number;
 }
 
 export const createMusic = async (musicData: MusicData) => {
   try {
     const music = MusicSchema.parse(musicData);
-    const newMusic: Music = await prisma.music.create({
+
+    const newMusic = await prisma.music.create({
       data: {
         title: music.title,
         year: music.year,
-        listenNumber: 0,
+        listenNumber: music.listenNumber || 0,
         artist: {
-          connect: { walletAddress: music.artist },
+          connect: { id: music.artistId },
         },
         album: {
           connect: { id: music.albumId },
@@ -72,6 +74,7 @@ export const createMusic = async (musicData: MusicData) => {
     });
     return newMusic;
   } catch (error: any) {
-    throw new Error(error.message);
+    console.error('Error creating new music:', error);
+    throw new Error('Error creating new music: ' + error.message);
   }
 };
