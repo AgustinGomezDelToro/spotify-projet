@@ -28,20 +28,24 @@ albumRouter.get('/:id', async (req, res) => {
   }
 });
 
-albumRouter.get('/album', async (req, res) => {
+albumRouter.get('/name/:title', async (req, res) => {
   try {
-    const album = await getAlbumByName(req.query.title as string);
-    res.status(200).json({ message: 'Album getted successfully', album });
+    const album = await getAlbumByName(req.params.title);
+    res.status(200).json({ message: 'Album retrieved successfully', album });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
 
+
 albumRouter.post('/', async (req, res) => {
   try {
-    const album = await createAlbum(req.body.title);
+    const album = await createAlbum(req.body);  // Usar req.body en lugar de req.body.title
     res.status(201).json({ message: 'Album created successfully', album });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
+
+
+export { albumRouter };
