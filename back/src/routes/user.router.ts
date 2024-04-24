@@ -32,7 +32,6 @@ userRouter.post('/', async (req, res) => {
 // Actualizar un usuario existente
 userRouter.put('/', async (req, res) => {
   try {
-    // Pasamos todo el objeto req.body a updateUser para actualizar todos los campos relevantes
     await updateUser(req.body as UserData);
     res.status(200).json({ message: 'User updated successfully' });
   } catch (error: any) {
