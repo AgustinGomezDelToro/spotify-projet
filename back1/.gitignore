@@ -1,0 +1,6 @@
+../back/.env
+node_modules
+prisma/migrations
+prisma/schema.prisma
+docker-compose.yml
+next-swc.darwin-x64.node

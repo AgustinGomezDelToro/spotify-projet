@@ -1,39 +1,40 @@
-// En tu archivo de rutas
 import { Router } from 'express';
-import type { UserData } from '../controllers/user.controller.ts';
 import {
   createUser,
   getUser,
   updateUser,
-} from '../controllers/user.controller.ts';
+} from '../controllers/user.controller';
 
 export const userRouter = Router();
 
-// Obtener información de usuario por walletAddress
 userRouter.get('/me', async (req, res) => {
   try {
     const user = await getUser(req.query.walletAddress as `0x${string}`);
-    res.status(200).json({ message: 'User information retrieved successfully', user: user });
+    res
+      .status(200)
+      .json({ message: 'User information getted successfully', user: user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Crear un nuevo usuario
 userRouter.post('/', async (req, res) => {
   try {
-    const user = await createUser(req.body as UserData);
+    const user = await createUser(req.body.walletAddress);
     res.status(201).json({ message: 'User created successfully', user: user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Actualizar un usuario existente
 userRouter.put('/', async (req, res) => {
   try {
-    await updateUser(req.body as UserData);
-    res.status(200).json({ message: 'User updated successfully' });
+    const user = await updateUser(
+      req.body.email,
+      req.body.username,
+      req.body.walletAddress
+    );
+    res.status(200).json({ message: 'User updated successfully', user: user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

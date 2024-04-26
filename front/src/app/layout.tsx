@@ -1,5 +1,13 @@
-import type { Metadata } from 'next';
 import './globals.css';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { Toaster } from 'sonner';
+
+import Web3ModalProvider from '@/components/Web3ModalProvider';
+import { cookieToInitialState } from 'wagmi';
+import Navbar from '@/components/Navbar';
+import SideBar from '@/components/SideBar';
+import { config } from '@/lib/config';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -11,9 +19,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState = cookieToInitialState(config, headers().get('cookie'));
   return (
     <html lang='en'>
-      <body>{children}</body>
+      <body>
+        <Web3ModalProvider initialState={initialState}>
+          <Toaster />
+          <Navbar />
+          <SideBar>{children}</SideBar>
+        </Web3ModalProvider>
+      </body>
     </html>
   );
 }

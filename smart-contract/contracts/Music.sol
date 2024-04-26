@@ -17,6 +17,14 @@ contract MusicToken is ERC721, ERC721URIStorage, Ownable {
         string ipfsHash;
     }
 
+    event Minted(
+        uint256 indexed tokenId,
+        string title,
+        string artist,
+        string ipfsHash,
+        int year
+    );
+
     constructor(
         address initialOwner
     ) ERC721("SpotifyWeb3", "SW3") Ownable(initialOwner) {}
@@ -32,6 +40,7 @@ contract MusicToken is ERC721, ERC721URIStorage, Ownable {
         _musics[tokenId] = Music(title, artist, year, ipfsHash);
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, ipfsHash);
+        emit Minted(tokenId, title, artist, ipfsHash, year);
         return tokenId;
     }
 

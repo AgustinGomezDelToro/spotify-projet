@@ -1,15 +1,7 @@
-import { prisma } from '../index.ts';
+import { prisma } from '../index';
 import { z } from 'zod';
 import type { User } from '@prisma/client';
 
-
-export interface UserData {
-  email: string;
-  username: string;
-  walletAddress: string;
-  isSubscribed: boolean;
-  isCreator: boolean;
-}
 export const getUser = async (walletAddress: `0x${string}`) => {
   try {
     const walletAddressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
@@ -25,27 +17,21 @@ export const getUser = async (walletAddress: `0x${string}`) => {
   }
 };
 
-export const createUser = async (userData: UserData) => {
+export const createUser = async (walletAddress: `0x${string}`) => {
   try {
-    const { email, username, walletAddress, isSubscribed, isCreator } = UserSchema.parse(userData);
-
-
+    const walletAddressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
+    const address = walletAddressSchema.parse(walletAddress);
     const userExist = await prisma.user.findUnique({
       where: {
-        walletAddress,
+        walletAddress: address,
       },
     });
     if (userExist) {
       throw new Error('User already exists');
     }
-
-    const user = await prisma.user.create({
+    const user: User = await prisma.user.create({
       data: {
-        email,
-        username,
-        walletAddress,
-        isSubscribed,
-        isCreator,
+        walletAddress: address,
       },
     });
     return user;
@@ -54,32 +40,30 @@ export const createUser = async (userData: UserData) => {
   }
 };
 
-
 const UserSchema = z.object({
   email: z.string().email(),
   username: z.string().min(3).max(30),
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  isSubscribed: z.boolean(),
-  isCreator: z.boolean(),
 });
 
-export const updateUser = async (userData: UserData) => {
+export const updateUser = async (
+  email: string,
+  username: string,
+  walletAddress: `0x${string}`
+) => {
   try {
-    const { email, username, walletAddress, isSubscribed, isCreator } = UserSchema.parse(userData);
-
+    const user = UserSchema.parse({ email, username, walletAddress });
     await prisma.user.update({
       where: {
-        walletAddress,
+        walletAddress: user.walletAddress,
       },
       data: {
-        email,
-        username,
-        isSubscribed,
-        isCreator,
+        username: user.username,
+        email: user.email,
+        walletAddress: user.walletAddress,
       },
     });
   } catch (error: any) {
     throw new Error(error.message);
   }
 };
-

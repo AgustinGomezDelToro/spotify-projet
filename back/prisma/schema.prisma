@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  username      String?
+  walletAddress String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isSubscribed  Boolean  @default(false)
+  isCreator     Boolean  @default(false)
+  musics        Music[]
+  album         Album[]
+}
+
+model Music {
+  id           String   @id @default(cuid())
+  title        String
+  artist       User     @relation(fields: [artistId], references: [id])
+  artistId     String
+  ipfsHash     String
+  year         Int
+  listenNumber Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  album        Album?   @relation(fields: [albumId], references: [id])
+  albumId      String?
+}
+
+model Album {
+  id        String   @id @default(cuid())
+  title     String
+  artist    User     @relation(fields: [artistId], references: [id])
+  artistId  String
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  musics    Music[]
+}

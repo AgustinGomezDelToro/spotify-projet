@@ -1,4 +1,4 @@
-import { prisma } from '../index.ts';
+import { prisma } from '../index';
 import { z } from 'zod';
 import type { Album } from '@prisma/client';
 
@@ -40,9 +40,8 @@ export const getAlbumByName = async (name: string) => {
 const AlbumSchema = z.object({
   title: z.string().min(3).max(30),
   year: z.number().int().positive().finite(),
-  artist: z.string(),
+  artist: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
 });
-
 
 interface AlbumData {
   title: string;
@@ -53,12 +52,15 @@ interface AlbumData {
 export const createAlbum = async (albumData: AlbumData) => {
   try {
     const album = AlbumSchema.parse(albumData);
-
-    const newAlbum = await prisma.album.create({
+    const newAlbum: Album = await prisma.album.create({
       data: {
         title: album.title,
         year: album.year,
-        artistId: album.artist,
+        artist: {
+          connect: {
+            walletAddress: album.artist,
+          },
+        },
       },
     });
     return newAlbum;
